@@ -9,9 +9,27 @@
 #include <time.h>
 #include <sstream>
 #include <iomanip>
+using namespace std;//
+//đoạn thêm mới 4
+int check_number() {
+    
+    while (true) {
+        int x;
+        if (cin >> x) {
+            return x;
+        }
+        else{
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Cu phap khong hop le, chi duoc nhap so nguyen \n";
+            cout << "Nhap so cho: ";
+        }
+    }
+}
 
+char timeStr[26];  // Mảng chứa chuỗi thời gian//đoạn thêm mới 1
 // Custom implementation of strptime
-tm *strptime(const char *s, const char *f, tm *tm)
+tm* strptime(const char* s, const char* f, tm* tm)
 {
     std::istringstream input(s);
     input >> std::get_time(tm, f);
@@ -21,8 +39,6 @@ tm *strptime(const char *s, const char *f, tm *tm)
     }
     return tm;
 }
-
-using namespace std;
 
 // Cấu trúc dữ liệu cho Máy bay
 struct MayBay
@@ -60,7 +76,7 @@ struct HanhKhach
 };
 
 // Danh sách máy bay
-vector<MayBay *> danhSachMayBay;
+vector<MayBay*> danhSachMayBay;
 
 // Danh sách chuyến bay
 list<ChuyenBay> danhSachChuyenBay;
@@ -69,7 +85,7 @@ list<ChuyenBay> danhSachChuyenBay;
 map<string, HanhKhach> danhSachHanhKhach;
 
 // Hàm thêm máy bay
-void themMayBay(MayBay *mb)
+void themMayBay(MayBay* mb)
 {
     danhSachMayBay.push_back(mb);
 }
@@ -89,7 +105,7 @@ void themHanhKhach(HanhKhach hk)
 // Hàm đặt vé
 void datVe(string maCB, Ve ve)
 {
-    for (auto &cb : danhSachChuyenBay)
+    for (auto& cb : danhSachChuyenBay)
     {
         if (cb.maCB == maCB)
         {
@@ -102,12 +118,12 @@ void datVe(string maCB, Ve ve)
 // Hàm hủy vé
 void huyVe(string maCB, int soVe)
 {
-    for (auto &cb : danhSachChuyenBay)
+    for (auto& cb : danhSachChuyenBay)
     {
         if (cb.maCB == maCB)
         {
-            cb.danhSachVe.remove_if([soVe](Ve &ve)
-                                    { return ve.soVe == soVe; });
+            cb.danhSachVe.remove_if([soVe](Ve& ve)
+                { return ve.soVe == soVe; });
             break;
         }
     }
@@ -116,19 +132,19 @@ void huyVe(string maCB, int soVe)
 // Hàm in danh sách hành khách thuộc chuyến bay
 void inDanhSachHanhKhach(string maCB)
 {
-    for (const auto &cb : danhSachChuyenBay)
+    for (const auto& cb : danhSachChuyenBay)
     {
         if (cb.maCB == maCB)
         {
             cout << "=============================================" << endl;
             cout << "DANH SACH HANH KHACH THUOC CHUYEN BAY " << maCB << endl;
-            cout << "Ngay gio khoi hanh: " << asctime(&cb.ngayGioKhoiHanh);
+            cout << "Ngay gio khoi hanh: " << asctime_s(timeStr, sizeof(timeStr), &cb.ngayGioKhoiHanh);//đoạn thêm mới 1
             cout << "Noi den: " << cb.sanBayDen << endl;
             cout << "---------------------------------------------" << endl;
             cout << setw(5) << "STT" << setw(10) << "SO VE" << setw(15) << "SO CMND" << setw(20) << "HO TEN" << setw(10) << "PHAI" << endl;
             cout << "---------------------------------------------" << endl;
             int stt = 1;
-            for (const auto &ve : cb.danhSachVe)
+            for (const auto& ve : cb.danhSachVe)
             {
                 HanhKhach hk = danhSachHanhKhach[ve.soCMND];
                 cout << setw(5) << stt++ << setw(10) << ve.soVe << setw(15) << ve.soCMND << setw(20) << hk.ho + " " + hk.ten << setw(10) << hk.phai << endl;
@@ -147,18 +163,18 @@ void luuDuLieu()
     {
         // Lưu danh sách máy bay
         file << danhSachMayBay.size() << endl;
-        for (const auto &mb : danhSachMayBay)
+        for (const auto& mb : danhSachMayBay)
         {
             file << mb->soHieuMB << " " << mb->loaiMB << " " << mb->soCho << endl;
         }
 
         // Lưu danh sách chuyến bay
         file << danhSachChuyenBay.size() << endl;
-        for (const auto &cb : danhSachChuyenBay)
+        for (const auto& cb : danhSachChuyenBay)
         {
-            file << cb.maCB << " " << asctime(&cb.ngayGioKhoiHanh) << " " << cb.sanBayDen << " " << cb.trangThai << " " << cb.soHieuMB << endl;
+            file << cb.maCB << " " << asctime_s(timeStr, sizeof(timeStr), &cb.ngayGioKhoiHanh) << " " << cb.sanBayDen << " " << cb.trangThai << " " << cb.soHieuMB << endl;//đoạn thêm mới 1
             file << cb.danhSachVe.size() << endl;
-            for (const auto &ve : cb.danhSachVe)
+            for (const auto& ve : cb.danhSachVe)
             {
                 file << ve.soVe << " " << ve.soCMND << endl;
             }
@@ -166,7 +182,7 @@ void luuDuLieu()
 
         // Lưu danh sách hành khách
         file << danhSachHanhKhach.size() << endl;
-        for (const auto &hk : danhSachHanhKhach)
+        for (const auto& hk : danhSachHanhKhach)
         {
             file << hk.second.soCMND << " " << hk.second.ho << " " << hk.second.ten << " " << hk.second.phai << endl;
         }
@@ -186,7 +202,7 @@ void docDuLieu()
         file >> soLuongMayBay;
         for (int i = 0; i < soLuongMayBay; ++i)
         {
-            MayBay *mb = new MayBay;
+            MayBay* mb = new MayBay;
             file >> mb->soHieuMB >> mb->loaiMB >> mb->soCho;
             danhSachMayBay.push_back(mb);
         }
@@ -253,32 +269,42 @@ void menu()
         {
         case 1:
         {
-            MayBay *mb = new MayBay;
-            cout << "Nhap so hieu may bay: ";
-            cin >> mb->soHieuMB;
-            cout << "Nhap loai may bay: ";
-            cin >> mb->loaiMB;
+            MayBay* mb = new MayBay;
+            cout << "QUY TAC:   chua co \n ";//đoạn thêm mới 3
+            cout << "EXAMPLE: MH 370 \n";   //đoạn thêm mới 3
+            cout << "Nhap so hieu may bay: \n";
+            cin.ignore();//đoạn thêm mới 2
+            getline(cin, mb->soHieuMB);
+            cout << "QUY TAC:   chua co \n ";//đoạn thêm mới 3
+            cout << "EXAMPLE: CHIEN DAU CO";//đoạn thêm mới 3
+            cout << "Nhap loai may bay: \n ";            
+            getline(cin, mb->loaiMB);//đoạn thêm mới 2
+            cout << "LUU Y: Chi nhap so nguyen\n";//đoạn thêm mới 3
             cout << "Nhap so cho: ";
-            cin >> mb->soCho;
+            mb->soCho=check_number();//đoạn thêm mới 4
             themMayBay(mb);
+            cin.ignore(); //đảm bảo có vòng lòng thì không gây lỗi getline //đoạn thêm mới 2
+            system("cls");//đoạn thêm mới 5
             break;
         }
         case 2:
         {
             ChuyenBay cb;
             cout << "Nhap ma chuyen bay: ";
-            cin >> cb.maCB;
+            cin.ignore();//đoạn thêm mới 2
+            getline(cin, cb.maCB); //đoạn thêm mới 2
             string ngayGio;
             cout << "Nhap ngay gio khoi hanh (dd/mm/yyyy hh:mm): ";
-            cin.ignore();
+            //đoạn thêm mới 2 (xóa cin.ignore vì đã xóa cin rồi)
             getline(cin, ngayGio);
             strptime(ngayGio.c_str(), "%d/%m/%Y %H:%M", &cb.ngayGioKhoiHanh);
             cout << "Nhap san bay den: ";
             cin >> cb.sanBayDen;
             cout << "Nhap trang thai (0: huy chuyen, 1: con ve, 2: het ve, 3: hoan tat): ";
-            cin >> cb.trangThai;
+            cin >> cb.trangThai;//line 28x cần sửa nếu trạng thái xảy ra thì chuyện gì sẽ xảy ra
             cout << "Nhap so hieu may bay: ";
-            cin >> cb.soHieuMB;
+            cin.ignore();
+            getline(cin, cb.soHieuMB);//đoạn thêm mới 2// ví dụ 'VN 22A' sẽ gặp lỗi còn 'VN-22A' ko gặp nên xài getline
             themChuyenBay(cb);
             break;
         }
@@ -304,7 +330,7 @@ void menu()
                 cin >> hk.phai;
                 themHanhKhach(hk);
             }
-            Ve ve{soVe, soCMND};
+            Ve ve{ soVe, soCMND };
             datVe(maCB, ve);
             break;
         }
